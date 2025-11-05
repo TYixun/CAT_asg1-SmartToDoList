@@ -48,9 +48,10 @@ public class JsonUtil {
         }
 
         try (Reader reader = new FileReader(FILE_PATH)) {
+            // Define TypeToken
             Type taskListType = new TypeToken<ArrayList<Task>>(){}.getType();
 
-            // This line will now only execute if the file exists AND is not empty
+            // Deserialization with Gson
             List<Task> tasks = gson.fromJson(reader, taskListType);
 
             if (tasks == null) {
@@ -65,7 +66,7 @@ public class JsonUtil {
             e.printStackTrace();
             return new ArrayList<>();
         } catch (com.google.gson.JsonSyntaxException e) {
-            // Optional: Catch this explicitly for corrupt JSON
+            // Catch for corrupt JSON
             System.err.println("Error loading tasks (Syntax: JSON is corrupt/invalid): " + e.getMessage());
             e.printStackTrace();
             return new ArrayList<>();

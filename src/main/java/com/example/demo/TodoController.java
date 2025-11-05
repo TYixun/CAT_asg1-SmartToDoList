@@ -67,17 +67,17 @@ public class TodoController {
     private void setupComboBoxes() {
         // Category ComboBoxes
         categoryComboBox.getItems().setAll(Category.values());
-        filterCategoryComboBox.getItems().add(null); // All categories
-        filterCategoryComboBox.getItems().addAll(Category.values());
+        filterCategoryComboBox.getItems().add(null); // No filter
+        filterCategoryComboBox.getItems().addAll(Category.values()); // All categories
 
         // Priority ComboBoxes
         priorityComboBox.getItems().setAll(Priority.values());
-        filterPriorityComboBox.getItems().add(null); // All priorities
-        filterPriorityComboBox.getItems().addAll(Priority.values());
+        filterPriorityComboBox.getItems().add(null); // No filter
+        filterPriorityComboBox.getItems().addAll(Priority.values()); // All priorities
 
         // Status ComboBox
         filterStatusComboBox.getItems().addAll("All", "Completed", "Incomplete");
-        filterStatusComboBox.setValue("All");
+        filterStatusComboBox.setValue("All"); // Default
     }
 
     private void setupTableView() {
@@ -240,7 +240,8 @@ public class TodoController {
                 "- Add, Edit, Delete tasks\n" +
                 "- Search and Filter\n" +
                 "- Data persistence with JSON\n\n" +
-                "Created for Software Development Workshop 2025/2026");
+                "Created for CAT201 Integrated Software Development Workshop 2025/2026\n" +
+                "By Teoh Yixun, Alvin Teh Jun You, Tan Chuan Huan");
         alert.showAndWait();
     }
 
