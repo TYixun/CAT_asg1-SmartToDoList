@@ -6,6 +6,7 @@ import com.example.demo.model.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,99 +19,89 @@ public class TaskService {
         loadTasks();
     }
 
-    //Add a new task
+    // Add a new task and auto-save
     public void addTask(Task task) {
         tasks.add(task);
-        saveTasks();
+        saveTasks(); // Auto-save
     }
 
-    //Update an existing task
-    public void updateTask(Task oldTask, Task newTask) {
+    // Edit task and auto-save
+    public void editTask(Task oldTask, Task newTask) {
         int index = tasks.indexOf(oldTask);
-        if (index >= 0) {
-            newTask.setId(oldTask.getId()); // Keep same ID
+        if (index != -1) {
             tasks.set(index, newTask);
-            saveTasks();
+            saveTasks(); // Auto-save
         }
     }
 
-    //Delete a task
+    // Delete task and auto-save
     public void deleteTask(Task task) {
         tasks.remove(task);
-        saveTasks();
+        saveTasks(); // Auto-save
     }
 
-    //Mark task as completed/uncompleted
-    public void toggleTaskCompletion(Task task) {
-        task.setCompleted(!task.isCompleted());
-        saveTasks();
+    // Mark as completed and auto-save
+    public void markCompleted(Task task, boolean completed) {
+        task.setCompleted(completed);
+        saveTasks(); // Auto-save
     }
 
-    //Get all tasks
     public ObservableList<Task> getAllTasks() {
         return tasks;
     }
 
-    //Search tasks by keyword (searches title and description)
-    public ObservableList<Task> searchTasks(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return tasks;
-        }
-
-        String lowerKeyword = keyword.toLowerCase();
-        return tasks.stream()
-                .filter(task -> task.getTitle().toLowerCase().contains(lowerKeyword) ||
-                        task.getDescription().toLowerCase().contains(lowerKeyword))
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+    // Simple unique enhancement: Sort by priority (descending) or due date
+    public void sortByPriority() {
+        tasks.sort(Comparator.comparingInt(task -> -task.getPriority().getLevel())); // Descending
     }
 
-    //Filter tasks by category
+    public void sortByDueDate() {
+        tasks.sort(Comparator.comparing(Task::getDueDate, Comparator.nullsLast(Comparator.naturalOrder())));
+    }
+
+    // Filter by category (using lambda)
     public ObservableList<Task> filterByCategory(Category category) {
         if (category == null) {
             return tasks;
         }
-
         return tasks.stream()
-                .filter(task -> task.getCategory().equals(category))
+                .filter(task -> task.getCategory() == category)
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
-    //Filter tasks by completion status
-    public ObservableList<Task> filterByStatus(boolean completed) {
-        return tasks.stream()
-                .filter(task -> task.isCompleted() == completed)
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-    }
-
-    //Filter tasks by due date
+    // Filter by due date
     public ObservableList<Task> filterByDueDate(LocalDate date) {
         if (date == null) {
             return tasks;
         }
-
         return tasks.stream()
                 .filter(task -> task.getDueDate() != null && task.getDueDate().equals(date))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
-    //Filter tasks by priority
+    // Filter by priority
     public ObservableList<Task> filterByPriority(Priority priority) {
         if (priority == null) {
             return tasks;
         }
-
         return tasks.stream()
                 .filter(task -> task.getPriority() == priority)
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
-    //Save tasks to JSON file
+    // Filter by completion status
+    public ObservableList<Task> filterByCompletion(boolean completed) {
+        return tasks.stream()
+                .filter(task -> task.isCompleted() == completed)
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+    }
+
+    // Save tasks to JSON file
     private void saveTasks() {
         JsonUtil.saveTasks(tasks);
     }
 
-
-    //Load tasks from JSON file
+    // Load tasks from JSON file
     private void loadTasks() {
         List<Task> loadedTasks = JsonUtil.loadTasks();
         tasks.addAll(loadedTasks);
