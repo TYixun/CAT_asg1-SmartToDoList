@@ -1,134 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import com.example.demo.model.Category?>
+<?import com.example.demo.model.Priority?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.TodoController">
+<BorderPane fx:controller="com.example.demo.TodoController"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefWidth="1200" prefHeight="700">
 
-    <!-- Top: MenuBar -->
+    <!-- MENU BAR -->
     <top>
         <MenuBar>
             <Menu text="File">
-                <MenuItem onAction="#handleExit" text="Exit" />
-            </Menu>
-            <Menu text="Edit">
-                <MenuItem onAction="#handleClearFilters" text="Clear All Filters" />
+                <items>
+                    <MenuItem text="Save" onAction="#saveTasks" />
+                    <MenuItem text="Exit" onAction="#handleExit" />
+                </items>
             </Menu>
             <Menu text="Help">
-                <MenuItem onAction="#handleAbout" text="About" />
+                <items>
+                    <MenuItem text="About" onAction="#showAbout" />
+                </items>
             </Menu>
         </MenuBar>
     </top>
 
-    <!-- Left: Task Input Form -->
-    <left>
-        <VBox prefWidth="350" spacing="10" style="-fx-background-color: #473472;">
-            <padding>
-                <Insets bottom="15" left="15" right="15" top="15" />
-            </padding>
-
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="✚ Add/Edit Task" textFill="#fffafa" />
-            <Separator />
-
-            <Label text="Title*" textFill="WHITE" />
-            <TextField fx:id="titleField" promptText="Enter task title" />
-
-            <Label text="Description" textFill="WHITE" />
-            <TextArea fx:id="descriptionArea" prefRowCount="3" promptText="Enter description" />
-
-            <Label text="Due Date" textFill="WHITE" />
-            <DatePicker fx:id="dueDatePicker" prefWidth="320" />
-
-            <Label text="Category*" textFill="WHITE" />
-            <ComboBox fx:id="categoryComboBox" prefWidth="320" promptText="Select category" style="-fx-background-color: WHITE;" />
-
-            <Label text="Priority*" textFill="WHITE" />
-            <ComboBox fx:id="priorityComboBox" prefWidth="320" promptText="Select priority" style="-fx-background-color: WHITE;" />
-
-            <Separator />
-
-            <HBox spacing="10">
-                <Button fx:id="addButton" onAction="#handleAddTask" prefWidth="155" style="-fx-background-color: WHITE;" text="Add Task" />
-                <Button fx:id="editButton" onAction="#handleEditTask" prefWidth="155" style="-fx-background-color: WHITE;" text="Update Task" />
-            </HBox>
-
-            <HBox spacing="10">
-                <Button fx:id="deleteButton" onAction="#handleDeleteTask" prefWidth="155" style="-fx-background-color: WHITE;" text="Delete Task" />
-                <Button onAction="#handleLoadToForm" prefWidth="155" style="-fx-background-color: WHITE;" text="Load to Form" />
-            </HBox>
-
-            <Button fx:id="markCompleteButton" onAction="#handleMarkComplete" prefWidth="320" style="-fx-background-color: WHITE;" text="Mark Complete/Incomplete" />
-        </VBox>
-    </left>
-
-    <!-- Center: Task Table -->
+    <!-- MAIN CONTENT -->
     <center>
-        <VBox spacing="10" style="-fx-background-color: WHITE;">
-            <padding>
-                <Insets bottom="15" left="15" right="15" top="15" />
-            </padding>
+        <GridPane hgap="15" vgap="12" alignment="CENTER">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Task List" />
-            <Separator />
+            <!-- LEFT: INPUT FORM -->
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="10">
+                <Label text="Add / Edit Task" style="-fx-font-size:18; -fx-font-weight:bold;"/>
+                <TextField fx:id="titleField" promptText="Title"/>
+                <TextArea fx:id="descriptionArea" promptText="Description" prefHeight="100"/>
+                <DatePicker fx:id="dueDatePicker" promptText="Due Date"/>
 
-            <TableView fx:id="taskTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="titleColumn" prefWidth="150" text="Title" />
-                    <TableColumn fx:id="descriptionColumn" prefWidth="200" text="Description" />
-                    <TableColumn fx:id="dueDateColumn" prefWidth="100" text="Due Date" />
-                    <TableColumn fx:id="categoryColumn" prefWidth="100" text="Category" />
-                    <TableColumn fx:id="priorityColumn" prefWidth="100" text="Priority" />
-                    <TableColumn fx:id="completedColumn" prefWidth="80" text="Completed" />
-                </columns>
-            </TableView>
-        </VBox>
+                <!-- CATEGORY -->
+                <ComboBox fx:id="categoryComboBox" promptText="Category" />
+
+                <!-- PRIORITY -->
+                <ComboBox fx:id="priorityComboBox" promptText="Priority" />
+
+                <HBox spacing="8">
+                    <Button text="Add" onAction="#addTask"/>
+                    <Button text="Edit" onAction="#editTask"/>
+                    <Button text="Delete" onAction="#deleteTask"/>
+                    <Button text="Complete" onAction="#markCompleted"/>
+                </HBox>
+
+                <TextField fx:id="searchField" promptText="Search…" onKeyReleased="#onSearch"/>
+            </VBox>
+
+            <!-- RIGHT: TASK TABLE -->
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="10">
+                <Label text="Your Tasks" style="-fx-font-size:18; -fx-font-weight:bold;"/>
+                <TableView fx:id="taskTable" prefWidth="720" prefHeight="520">
+                    <columns>
+                        <TableColumn fx:id="titleColumn"       text="Title"       prefWidth="160"/>
+                        <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="220"/>
+                        <TableColumn fx:id="dueDateColumn"     text="Due Date"    prefWidth="110"/>
+                        <TableColumn fx:id="categoryColumn"    text="Category"    prefWidth="100"/>
+                        <TableColumn fx:id="priorityColumn"    text="Priority"    prefWidth="90"/>
+                        <TableColumn fx:id="completedColumn"   text="Done"        prefWidth="70"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </GridPane>
     </center>
 
-    <!-- Right: Search & Filter Panel -->
-    <right>
-        <VBox prefWidth="250" spacing="10" style="-fx-background-color: #473472;">
-            <padding>
-                <Insets bottom="15" left="15" right="15" top="15" />
-            </padding>
-
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="🔍 Search &amp; Filter" textFill="WHITE" />
-            <Separator />
-
-            <Label text="Search Keywords" textFill="WHITE" />
-            <TextField fx:id="searchField" promptText="Search tasks..." />
-
-            <Separator />
-
-            <Label text="Filter by Category" textFill="WHITE" />
-            <ComboBox fx:id="filterCategoryComboBox" prefWidth="220" promptText="All" style="-fx-background-color: WHITE;" />
-
-            <Label text="Filter by Priority" textFill="WHITE" />
-            <ComboBox fx:id="filterPriorityComboBox" prefWidth="220" promptText="All" style="-fx-background-color: WHITE;" />
-
-            <Label text="Filter by Due Date" textFill="WHITE" />
-            <DatePicker fx:id="filterDatePicker" prefWidth="220" />
-
-            <Label text="Filter by Status" textFill="WHITE" />
-            <ComboBox fx:id="filterStatusComboBox" prefWidth="220" style="-fx-background-color: WHITE;" />
-
-            <Separator />
-
-            <Button fx:id="clearFiltersButton" onAction="#handleClearFilters" prefWidth="220" style="-fx-background-color: WHITE;" text="Clear All Filters" />
-        </VBox>
-    </right>
-
+    <!-- STATUS BAR -->
+    <bottom>
+        <Label fx:id="statsLabel" text="Completed: 0 / Total: 0"
+               style="-fx-padding:10; -fx-font-size:14;"/>
+    </bottom>
 </BorderPane>

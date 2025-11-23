@@ -17,6 +17,10 @@ public class Main extends Application {
 
             // Create scene
             Scene scene = new Scene(root, 1200, 700);
+            // Add CSS (new line)
+            scene.getStylesheets().add(
+                    getClass().getResource("/styles.css").toExternalForm()
+            );
 
             // Setup stage
             primaryStage.setTitle("Smart Todo List");

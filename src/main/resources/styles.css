@@ -1,0 +1,76 @@
+/* Smart Todo List - Crystal Clear Dark Theme */
+.root {
+    -fx-background-color: #1e1f22;
+    -fx-font-family: "Segoe UI", "Helvetica", "Arial", sans-serif;
+    -fx-font-size: 14px;
+}
+
+.label {
+    -fx-text-fill: #e0e0e0;
+    -fx-font-weight: bold;
+}
+
+.text-field, .text-area, .date-picker > .text-field, .combo-box > .text-field {
+    -fx-background-color: #2c2d30;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #888888;
+    -fx-border-color: #555555;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.text-area {
+    -fx-font-size: 13px;
+}
+
+.button {
+    -fx-background-color: #404144;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+}
+
+.button:hover {
+    -fx-background-color: #555759;
+}
+
+.table-view {
+    -fx-background-color: #2c2d30;
+    -fx-border-color: #404144;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #363739;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #2c2d30;
+    -fx-text-fill: #e0e0e0;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #404144;
+}
+
+/* PRIORITY COLORS - SUPER VISIBLE */
+.priority-URGENT   { -fx-text-fill: #ff5555; -fx-font-weight: bold; }
+.priority-HIGH     { -fx-text-fill: #ffaa00; -fx-font-weight: bold; }
+.priority-MEDIUM   { -fx-text-fill: #ffff55; }
+.priority-LOW      { -fx-text-fill: #55ff55; }
+
+/* MenuBar */
+.menu-bar {
+    -fx-background-color: #1e1f22;
+}
+
+.menu-item:focused, .menu-item:hover {
+    -fx-background-color: #404144;
+}
