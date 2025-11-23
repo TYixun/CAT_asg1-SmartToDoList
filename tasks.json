@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "id": "482944a7-b559-4331-9c9a-449c1a7caea7",
+    "title": "Play",
+    "description": "plficidai1243",
+    "dueDate": "2025-10-31",
+    "category": "WORK",
+    "priority": "LOW",
+    "completed": false
+  },
+  {
+    "id": "bdf500b0-6b10-4ac2-aad1-6ba9ac7e72b2",
+    "title": "w rh",
+    "description": "s g",
+    "dueDate": "2025-11-23",
+    "category": "SCHOOL",
+    "priority": "URGENT",
+    "completed": true
+  },
+  {
+    "id": "11e724ca-35c3-42a8-8a8a-538876b2eb8b",
+    "title": "rysxc",
+    "description": "fnz dfxg",
+    "dueDate": "2025-11-01",
+    "category": "LLM",
+    "priority": "MEDIUM",
+    "completed": false
+  }
+]

@@ -8,10 +8,9 @@ public class Task {
     private String title;
     private String description;
     private LocalDate dueDate;
-    private Category category;
+    private String category;
     private Priority priority;
     private boolean completed;
-
 
     // Constructor
     public Task() {
@@ -20,7 +19,7 @@ public class Task {
     }
 
     public Task(String title, String description, LocalDate dueDate,
-                Category category, Priority priority) {
+            String category, Priority priority) {
         this();
         this.title = title;
         this.description = description;
@@ -62,11 +61,11 @@ public class Task {
         this.dueDate = dueDate;
     }
 
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
