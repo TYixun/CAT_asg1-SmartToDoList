@@ -7,19 +7,19 @@ import com.example.demo.model.Task;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-
 
 public class JsonUtil {
     private static final String FILE_PATH = "tasks.json";
     private static final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();
 
-    //Save tasks to JSON file
+    // Save tasks to JSON file
     public static void saveTasks(List<Task> tasks) {
         try (Writer writer = new FileWriter(FILE_PATH)) {
             gson.toJson(tasks, writer);
@@ -29,7 +29,6 @@ public class JsonUtil {
             e.printStackTrace();
         }
     }
-
 
     // Load tasks from JSON file
     public static List<Task> loadTasks() {
@@ -49,7 +48,8 @@ public class JsonUtil {
 
         try (Reader reader = new FileReader(FILE_PATH)) {
             // Define TypeToken
-            Type taskListType = new TypeToken<ArrayList<Task>>(){}.getType();
+            Type taskListType = new TypeToken<ArrayList<Task>>() {
+            }.getType();
 
             // Deserialization with Gson
             List<Task> tasks = gson.fromJson(reader, taskListType);
