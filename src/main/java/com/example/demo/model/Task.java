@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Task {
@@ -11,11 +12,13 @@ public class Task {
     private String category;
     private Priority priority;
     private boolean completed;
+    private LocalDateTime createdAt;
 
     // Constructor
     public Task() {
         this.id = UUID.randomUUID().toString();
         this.completed = false;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Task(String title, String description, LocalDate dueDate,
@@ -83,6 +86,14 @@ public class Task {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override

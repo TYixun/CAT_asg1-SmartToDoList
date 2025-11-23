@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.ObservableList;
-import javafx.scene.layout.VBox;
+import javafx.collections.FXCollections;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
@@ -18,7 +18,6 @@ import java.util.Set;
 public class TodoController {
 
     // --- Constants ---
-    private static final String STYLE_NAV_BUTTON = "nav-button";
     private static final String STYLE_SELECTED = "selected";
     private static final String STYLE_ACTION_BUTTON = "action-button";
     private static final String STYLE_SECONDARY_BUTTON = "secondary-button";
@@ -58,9 +57,15 @@ public class TodoController {
     @FXML
     private TextField searchField;
     @FXML
-    private VBox categoryListVBox;
+    private ComboBox<String> categoryFilterComboBox;
     @FXML
     private DatePicker sidebarDatePicker;
+    @FXML
+    private Label filterLabel;
+    @FXML
+    private ComboBox<String> viewByComboBox;
+    @FXML
+    private ComboBox<Priority> priorityFilterComboBox;
 
     // Buttons
     @FXML
@@ -82,7 +87,7 @@ public class TodoController {
 
     // Current Filter State
     private enum FilterMode {
-        ALL, TODAY, IMPORTANT, COMPLETED, CATEGORY, DATE
+        ALL, TODAY, COMPLETED, INCOMPLETE, CATEGORY, DATE
     }
 
     private FilterMode currentFilterMode = FilterMode.ALL;
@@ -97,8 +102,10 @@ public class TodoController {
     public void initialize() {
         taskService = new TaskService();
         setupComboBoxes();
+        setupViewByComboBox();
+        setupPriorityFilter();
+        setupCategoryFilter();
         setupTableView();
-        setupCategoryList();
         refreshTaskTable();
         setupListeners();
         clearInputFields();
@@ -107,6 +114,19 @@ public class TodoController {
     private void setupComboBoxes() {
         updateCategoryComboBox();
         priorityComboBox.getItems().setAll(Priority.values());
+    }
+
+    private void setupViewByComboBox() {
+        viewByComboBox.getItems().addAll("Default", "Priority", "Date");
+        viewByComboBox.setValue("Default");
+        viewByComboBox.setOnAction(e -> applyViewBySort());
+    }
+
+    private void setupPriorityFilter() {
+        priorityFilterComboBox.getItems().add(null); // "All" option
+        priorityFilterComboBox.getItems().addAll(Priority.values());
+        priorityFilterComboBox.setPromptText("All Priorities");
+        priorityFilterComboBox.setOnAction(e -> applyFilters());
     }
 
     private void updateCategoryComboBox() {
@@ -167,20 +187,25 @@ public class TodoController {
         });
     }
 
-    private void setupCategoryList() {
-        categoryListVBox.getChildren().clear();
-        Set<String> categories = taskService.getUniqueCategories();
+    private void setupCategoryFilter() {
+        updateCategoryFilter();
+        categoryFilterComboBox.setOnAction(e -> {
+            String selectedCategory = categoryFilterComboBox.getValue();
+            if (selectedCategory != null && !selectedCategory.equals("All Categories")) {
+                filterByCategory(selectedCategory);
+            } else {
+                setFilterMode(FilterMode.ALL, null);
+                updateFilterLabel("All Tasks");
+            }
+        });
+    }
 
-        for (String category : categories) {
-            Button catBtn = new Button(category);
-            catBtn.setMaxWidth(Double.MAX_VALUE);
-            catBtn.getStyleClass().add(STYLE_NAV_BUTTON);
-            catBtn.setOnAction(e -> {
-                filterByCategory(category);
-                setActiveNavButton(catBtn);
-            });
-            categoryListVBox.getChildren().add(catBtn);
-        }
+    private void updateCategoryFilter() {
+        Set<String> categories = taskService.getUniqueCategories();
+        ObservableList<String> categoryList = FXCollections.observableArrayList("All Categories");
+        categoryList.addAll(categories);
+        categoryFilterComboBox.setItems(categoryList);
+        categoryFilterComboBox.setValue("All Categories");
     }
 
     private void setupListeners() {
@@ -219,21 +244,25 @@ public class TodoController {
     @FXML
     private void filterAll(ActionEvent event) {
         setFilterMode(FilterMode.ALL, event);
+        updateFilterLabel("All Tasks");
     }
 
     @FXML
     private void filterToday(ActionEvent event) {
         setFilterMode(FilterMode.TODAY, event);
-    }
-
-    @FXML
-    private void filterImportant(ActionEvent event) {
-        setFilterMode(FilterMode.IMPORTANT, event);
+        updateFilterLabel("Today");
     }
 
     @FXML
     private void filterCompleted(ActionEvent event) {
         setFilterMode(FilterMode.COMPLETED, event);
+        updateFilterLabel("Completed");
+    }
+
+    @FXML
+    private void filterIncomplete(ActionEvent event) {
+        setFilterMode(FilterMode.INCOMPLETE, event);
+        updateFilterLabel("Incomplete");
     }
 
     private void setFilterMode(FilterMode mode, ActionEvent event) {
@@ -249,13 +278,62 @@ public class TodoController {
         currentFilterMode = FilterMode.CATEGORY;
         currentCategoryFilter = category;
         sidebarDatePicker.setValue(null);
+        updateFilterLabel(category);
         applyFilters();
     }
 
     private void filterByDate(LocalDate date) {
         currentFilterMode = FilterMode.DATE;
         currentDateFilter = date;
+        updateFilterLabel(date.toString());
         applyFilters();
+    }
+
+    private void updateFilterLabel(String filterName) {
+        filterLabel.setText("- " + filterName);
+    }
+
+    private void applyViewBySort() {
+        String sortBy = viewByComboBox.getValue();
+        ObservableList<Task> tasks = taskTable.getItems();
+
+        if ("Priority".equals(sortBy)) {
+            tasks.sort((t1, t2) -> {
+                Priority p1 = t1.getPriority();
+                Priority p2 = t2.getPriority();
+                if (p1 == null && p2 == null)
+                    return 0;
+                if (p1 == null)
+                    return 1;
+                if (p2 == null)
+                    return -1;
+                // URGENT (4) > HIGH (3) > MEDIUM (2) > LOW (1)
+                return Integer.compare(p2.getLevel(), p1.getLevel());
+            });
+        } else if ("Date".equals(sortBy)) {
+            tasks.sort((t1, t2) -> {
+                LocalDate d1 = t1.getDueDate();
+                LocalDate d2 = t2.getDueDate();
+                if (d1 == null && d2 == null)
+                    return 0;
+                if (d1 == null)
+                    return 1;
+                if (d2 == null)
+                    return -1;
+                return d1.compareTo(d2);
+            });
+        } else {
+            // Default: sort by creation time (newest first)
+            tasks.sort((t1, t2) -> {
+                if (t1.getCreatedAt() == null && t2.getCreatedAt() == null)
+                    return 0;
+                if (t1.getCreatedAt() == null)
+                    return 1;
+                if (t2.getCreatedAt() == null)
+                    return -1;
+                return t2.getCreatedAt().compareTo(t1.getCreatedAt()); // Newest first
+            });
+        }
     }
 
     private void applyFilters() {
@@ -263,8 +341,8 @@ public class TodoController {
 
         switch (currentFilterMode) {
             case TODAY -> filteredTasks = taskService.filterByDueDate(LocalDate.now());
-            case IMPORTANT -> filteredTasks = taskService.filterByPriority(Priority.HIGH);
             case COMPLETED -> filteredTasks = taskService.filterByStatus(true);
+            case INCOMPLETE -> filteredTasks = taskService.filterByStatus(false);
             case CATEGORY -> {
                 if (currentCategoryFilter != null)
                     filteredTasks = taskService.filterByCategory(currentCategoryFilter);
@@ -273,6 +351,12 @@ public class TodoController {
                 if (currentDateFilter != null)
                     filteredTasks = taskService.filterByDueDate(currentDateFilter);
             }
+        }
+
+        // Apply priority filter
+        Priority selectedPriority = priorityFilterComboBox.getValue();
+        if (selectedPriority != null) {
+            filteredTasks = filteredTasks.filtered(task -> task.getPriority() == selectedPriority);
         }
 
         String searchText = searchField.getText();
@@ -339,17 +423,24 @@ public class TodoController {
             return null;
         }
 
+        // Validate due date is not before today
+        LocalDate dueDate = dueDatePicker.getValue();
+        if (dueDate != null && dueDate.isBefore(LocalDate.now())) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Due date cannot be before today!");
+            return null;
+        }
+
         return new Task(
                 titleField.getText().trim(),
                 descriptionArea.getText().trim(),
-                dueDatePicker.getValue(),
+                dueDate,
                 category.trim().toUpperCase(),
                 priorityComboBox.getValue());
     }
 
     private void refreshUIAfterUpdate() {
-        setupCategoryList();
         updateCategoryComboBox();
+        updateCategoryFilter();
         refreshTaskTable();
     }
 
@@ -382,11 +473,21 @@ public class TodoController {
     @FXML
     private void handleClearFilters() {
         searchField.clear();
+        viewByComboBox.setValue("Default");
+        priorityFilterComboBox.setValue(null);
+        sidebarDatePicker.setValue(null);
         if (activeNavButton != null) {
             activeNavButton.getStyleClass().remove(STYLE_SELECTED);
             activeNavButton = null;
         }
         setFilterMode(FilterMode.ALL, null);
+        updateFilterLabel("All Tasks");
+    }
+
+    @FXML
+    private void handleClearForm() {
+        clearInputFields();
+        taskTable.getSelectionModel().clearSelection();
     }
 
     @FXML

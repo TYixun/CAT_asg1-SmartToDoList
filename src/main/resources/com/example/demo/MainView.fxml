@@ -44,25 +44,34 @@
                 <Label styleClass="sidebar-label" text="SMART LISTS" />
                 <Button maxWidth="Infinity" onAction="#filterAll" styleClass="nav-button" text="All Tasks" />
                 <Button maxWidth="Infinity" onAction="#filterToday" styleClass="nav-button" text="Today" />
-                <Button maxWidth="Infinity" onAction="#filterImportant" styleClass="nav-button" text="Important" />
                 <Button maxWidth="Infinity" onAction="#filterCompleted" styleClass="nav-button" text="Completed" />
+                <Button maxWidth="Infinity" onAction="#filterIncomplete" styleClass="nav-button" text="Incomplete" />
 
                 <Region prefHeight="10" />
                 <Label styleClass="sidebar-label" text="FILTER BY DATE" />
                 <DatePicker fx:id="sidebarDatePicker" maxWidth="Infinity" promptText="Select Date" />
 
+                <Region prefHeight="10" />
+                <Label styleClass="sidebar-label" text="FILTER BY PRIORITY" />
+                <ComboBox fx:id="priorityFilterComboBox" maxWidth="Infinity" promptText="All Priorities" />
+
                 <Region prefHeight="20" />
                 
                 <Label styleClass="sidebar-label" text="CATEGORIES" />
-                <VBox fx:id="categoryListVBox" spacing="5" />
+                <ComboBox fx:id="categoryFilterComboBox" maxWidth="Infinity" promptText="All Categories" />
             </VBox>
 
             <!-- Center: Task List -->
             <VBox minWidth="400" styleClass="task-list-pane">
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label styleClass="header-label" text="Tasks" />
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <VBox spacing="0">
+                        <Label styleClass="header-label" text="Tasks" />
+                    </VBox>
+                    <Label fx:id="filterLabel" styleClass="filter-label" text="- All Tasks" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <TextField fx:id="searchField" prefWidth="200" promptText="Search" styleClass="search-field" />
+                    <Label text="View by:" styleClass="filter-by-label" />
+                    <ComboBox fx:id="viewByComboBox" prefWidth="100" promptText="Default" />
+                    <TextField fx:id="searchField" prefWidth="180" promptText="Search" styleClass="search-field" />
                 </HBox>
 
                 <TableView fx:id="taskTable" VBox.vgrow="ALWAYS">
@@ -102,6 +111,7 @@
 
                 <Button fx:id="addButton" maxWidth="Infinity" onAction="#handleAddTask" styleClass="action-button" text="Add Task" />
                 <Button fx:id="editButton" maxWidth="Infinity" onAction="#handleEditTask" styleClass="action-button" text="Update Task" visible="false" managed="false" />
+                <Button fx:id="clearButton" maxWidth="Infinity" onAction="#handleClearForm" styleClass="secondary-button" text="Clear" />
                 
                 <Button fx:id="deleteButton" maxWidth="Infinity" onAction="#handleDeleteTask" styleClass="delete-button" text="Delete Task" />
             </VBox>
