@@ -475,6 +475,7 @@ public class TodoController {
         searchField.clear();
         viewByComboBox.setValue("Default");
         priorityFilterComboBox.setValue(null);
+        categoryFilterComboBox.setValue("All Categories");
         sidebarDatePicker.setValue(null);
         if (activeNavButton != null) {
             activeNavButton.getStyleClass().remove(STYLE_SELECTED);
