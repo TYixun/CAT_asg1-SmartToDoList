@@ -1,29 +1,31 @@
 package com.example.demo.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.time.LocalDate;     // Used for handling dates (like dueDate)
+import java.time.LocalDateTime; // Used for handling dates and times (like createdAt)
+import java.util.UUID;          // Used for generating a unique identifier (UUID) for the task ID
 
 public class Task {
-    private String id;
-    private String title;
-    private String description;
-    private LocalDate dueDate;
-    private String category;
-    private Priority priority;
-    private boolean completed;
-    private LocalDateTime createdAt;
+    // --- Fields (Task Attributes) ---
+    private String id;                  // Unique identifier, automatically generated.
+    private String title;               // The title of the task.
+    private String description;         // Detailed explanation of the task
+    private LocalDate dueDate;          // The date when the task is expected to be finished
+    private String category;            // A grouping label (e.g., "Work," "Personal," "Groceries")
+    private Priority priority;          // The urgency level (e.g., LOW, HIGH, URGENT)
+    private boolean completed;          // Status flag: true if done, false otherwise
+    private LocalDateTime createdAt;    // Timestamp of when the task was created
 
-    // Constructor
+    // Default Constructor
     public Task() {
-        this.id = UUID.randomUUID().toString();
-        this.completed = false;
-        this.createdAt = LocalDateTime.now();
+        this.id = UUID.randomUUID().toString(); // Automatically generate a unique ID
+        this.completed = false; // Default state is not completed
+        this.createdAt = LocalDateTime.now(); // Record the creation time
     }
 
+    //Parameterized constructor for creating a new task with all required details.
     public Task(String title, String description, LocalDate dueDate,
             String category, Priority priority) {
-        this();
+        this(); // Calls the default constructor to initialize id, completed, and createdAt
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
@@ -96,6 +98,7 @@ public class Task {
         this.createdAt = createdAt;
     }
 
+    // @return A formatted string containing the title, priority, and category
     @Override
     public String toString() {
         return title + " - " + priority + " (" + category + ")";
